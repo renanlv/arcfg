@@ -158,7 +158,7 @@ setup_pacman() {
 }
 
 setup_extra_environment() {
-    sudo pacman -S --noconfirm fwupd flatpak
+    sudo pacman -S --noconfirm fwupd flatpak gamemode
     sudo systemctl enable fwupd-refresh.timer
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
