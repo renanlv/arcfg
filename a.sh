@@ -293,7 +293,7 @@ main() {
     configure_boot
     
     echo ""
-    echo "${GREEN}Instalação concluída!${NC}"
+    echo "${GREEN}${NC}"
     echo "${YELLOW}.${NC}"
 }
 
