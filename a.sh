@@ -294,7 +294,7 @@ main() {
     
     echo ""
     echo "${GREEN}Instalação concluída!${NC}"
-    echo "${YELLOWNC}"
+    echo "${YELLOW}Reinicie o sistema .${NC}"
 }
 
 main
