@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-
 STATE_DIR="/tmp/arch_install_state"
 mkdir -p "$STATE_DIR"
 
@@ -295,6 +294,7 @@ main() {
     
     echo ""
     echo "${GREEN}Instalação concluída!${NC}"
+    echo "${YELLOW}Reinicie o sistema para concluir a instalação.${NC}"
 }
 
 main
