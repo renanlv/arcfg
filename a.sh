@@ -293,6 +293,7 @@ main() {
     configure_performance
     configure_boot
     
+    echo ""
     echo "${GREEN}Instalação concluída!${NC}"
 }
 
