@@ -179,7 +179,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit gamemode arch-update
+    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit tealdeer gamemode arch-update
 }
 
 install_desktop() {
