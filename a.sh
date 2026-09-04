@@ -179,7 +179,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 tealdeer fastfetch msedit arch-update
+    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit arch-update
 }
 
 install_desktop() {
@@ -187,7 +187,7 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-keyring gnome-software gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-software gnome-backgrounds
             sudo systemctl enable gdm
             ;;
         kde)
