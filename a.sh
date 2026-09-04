@@ -179,7 +179,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 tealdeer fastfetch msedit gamemode arch-update
+    sudo pacman -S --noconfirm git 7zip aria2 tealdeer fastfetch msedit arch-update xdg-desktop-portal-gtk xdg-desktop-portal-gtk
 }
 
 install_desktop() {
@@ -187,15 +187,15 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-keyring gnome-software gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-keyring gnome-software gnome-backgrounds xdg-desktop-portal-gtk xdg-desktop-portal-gtk
             sudo systemctl enable gdm
             ;;
         kde)
-            sudo pacman -S --noconfirm plasma-meta konsole dolphin dolphin-plugins partitionmanager filelight ark 
+            sudo pacman -S --noconfirm plasma-meta konsole dolphin dolphin-plugins partitionmanager filelight ark xdg-desktop-portal-gtk xdg-desktop-portal-gtk
             sudo systemctl enable plasmalogin
             ;;
         cosmic)
-            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs xdg-desktop-portal-gtk
             sudo systemctl enable cosmic-greeter
             ;;
     esac
