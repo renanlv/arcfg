@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-
+sudo pacman -Syu
 STATE_DIR="/tmp/arch_install_state"
 mkdir -p "$STATE_DIR"
 
