@@ -39,7 +39,7 @@ detect_distro() {
     fi
 }
 
-detect_cpu() {
+detect_hardware() {
     local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
     if echo "$cpu_info" | grep -qi "intel"; then
         echo "intel" > "$STATE_DIR/cpu"
@@ -48,9 +48,7 @@ detect_cpu() {
     else
         echo "intel" > "$STATE_DIR/cpu"
     fi
-}
-
-detect_gpu() {
+    
     local gpu_info=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
     if echo "$gpu_info" | grep -qi "nvidia"; then
         echo "nvidia" > "$STATE_DIR/gpu_driver"
@@ -61,21 +59,16 @@ detect_gpu() {
     else
         echo "nvidia" > "$STATE_DIR/gpu_driver"
     fi
-}
-
-detect_motherboard_brand() {
-    local brand="gigabyte"
     
+    local brand="gigabyte"
     if [ -f /sys/class/dmi/id/board_vendor ]; then
         brand=$(cat /sys/class/dmi/id/board_vendor 2>/dev/null)
     fi
-    
     if [ -z "$brand" ] || [ "$brand" == "Unknown" ] || [ "$brand" == "To be filled by O.E.M." ]; then
         if [ -f /sys/class/dmi/id/sys_vendor ]; then
             brand=$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null)
         fi
     fi
-    
     case "$brand" in
         *"ASUS"*|*"Asus"*) echo "asus" > "$STATE_DIR/motherboard_brand" ;;
         *"Gigabyte"*|*"GIGABYTE"*) echo "gigabyte" > "$STATE_DIR/motherboard_brand" ;;
@@ -134,15 +127,13 @@ select_desktop() {
     show_option "1" "GNOME"
     show_option "2" "KDE Plasma"
     show_option "3" "COSMIC"
-    show_option "4" "Nenhum"
     echo ""
-    read -p "Opção [1-4] (Enter para GNOME): " de_opt
+    read -p "Opção [1-3] (Enter para GNOME): " de_opt
     
     case "$de_opt" in
         1|"") echo "gnome" > "$STATE_DIR/desktop" ;;
         2) echo "kde" > "$STATE_DIR/desktop" ;;
         3) echo "cosmic" > "$STATE_DIR/desktop" ;;
-        4) echo "none" > "$STATE_DIR/desktop" ;;
         *) echo "${RED}Opção inválida.${NC}"
            sleep 1
            select_desktop
@@ -151,68 +142,35 @@ select_desktop() {
     sleep 1
 }
 
-select_extras() {
-    clear_screen
-    show_section "FERRAMENTAS EXTRAS"
-    echo "  Selecione as ferramentas (escolha múltiplas):"
-    echo ""
-    show_option "1" "Paru"
-    show_option "2" "Distrobox"
-    show_option "3" "Podman"
-    show_option "4" "Ollama"
-    echo ""
-    echo "  Digite os números separados por espaço (ex: 1 3 4) ou Enter para nenhum:"
-    read -p "Opções: " -a extras_opts
-    
-    if [[ ${#extras_opts[@]} -eq 0 ]]; then
-        echo "none" > "$STATE_DIR/extras"
-    else
-        local extras_list=""
-        for opt in "${extras_opts[@]}"; do
-            case "$opt" in
-                1) extras_list="${extras_list} paru" ;;
-                2) extras_list="${extras_list} distrobox" ;;
-                3) extras_list="${extras_list} podman" ;;
-                4) extras_list="${extras_list} ollama" ;;
-                *) echo "${RED}Opção inválida: $opt${NC}" ;;
-            esac
-        done
-        echo "$extras_list" > "$STATE_DIR/extras"
-    fi
-    sleep 1
-}
-
-configure_pacman() {
+setup_pacman() {
     sudo sed -i 's/^#Color/Color/' /etc/pacman.conf
     sudo sed -i '/Color/a ILoveCandy' /etc/pacman.conf
     sudo sed -i '/^ParallelDownloads/d' /etc/pacman.conf
     sudo sed -i '/ILoveCandy/a ParallelDownloads = 15' /etc/pacman.conf
-}
-
-configure_chaotic_aur() {
+    
     sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     sudo pacman-key --lsign-key 3056513887B78AEB
     sudo pacman -U --noconfirm \
         "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst" \
         "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst"
     echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
-}
-
-setup_sources() {
-    configure_pacman
-    configure_chaotic_aur
+    
     sudo pacman -Syu --noconfirm
 }
 
-install_cpu_microcode() {
+setup_extra_environment() {
+    sudo pacman -S --noconfirm fwupd flatpak
+    sudo systemctl enable fwupd-refresh.timer
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+}
+
+install_microcode_drivers() {
     local cpu=$(cat "$STATE_DIR/cpu")
     case "$cpu" in
         intel) sudo pacman -S --noconfirm intel-ucode ;;
         amd) sudo pacman -S --noconfirm amd-ucode ;;
     esac
-}
-
-install_gpu_drivers() {
+    
     local gpu=$(cat "$STATE_DIR/gpu_driver")
     case "$gpu" in
         intel) sudo pacman -S --noconfirm vulkan-intel ;;
@@ -222,40 +180,7 @@ install_gpu_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 tealdeer fastfetch msedit gamemode arch-update
-}
-
-install_extras() {
-    local extras=$(cat "$STATE_DIR/extras")
-    [[ "$extras" == "none" ]] && return
-    
-    for pkg in $extras; do
-        case "$pkg" in
-            paru) sudo pacman -S --noconfirm paru ;;
-            distrobox) sudo pacman -S --noconfirm distrobox ;;
-            podman)
-                sudo pacman -S --noconfirm podman podman-docker podman-compose
-                systemctl --user enable podman.socket
-                ;;
-            ollama)
-                sudo pacman -S --noconfirm ollama
-                local gpu=$(cat "$STATE_DIR/gpu_driver")
-                case "$gpu" in
-                    nvidia) sudo pacman -S --noconfirm ollama-cuda ;;
-                    amd)
-                        local cpu=$(cat "$STATE_DIR/cpu")
-                        if [[ "$cpu" == "amd" ]]; then
-                            sudo pacman -S --noconfirm ollama-rocm
-                        else
-                            sudo pacman -S --noconfirm ollama-vulkan
-                        fi
-                        ;;
-                    intel) sudo pacman -S --noconfirm ollama-vulkan ;;
-                esac
-                sudo systemctl enable ollama.service
-                ;;
-        esac
-    done
+    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit gamemode arch-update
 }
 
 install_desktop() {
@@ -274,24 +199,11 @@ install_desktop() {
             sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
             sudo systemctl enable cosmic-greeter
             ;;
-        none) ;;
     esac
-}
-
-configure_flatpak() {
-    sudo pacman -S --noconfirm flatpak
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-}
-
-configure_firmware() {
-    sudo pacman -S --noconfirm fwupd
-    sudo systemctl enable fwupd-refresh.timer
 }
 
 configure_firewall() {
     sudo ufw reload
-    sudo ufw allow 1714:1764/udp
-    sudo ufw allow 1714:1764/tcp
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
 }
@@ -305,7 +217,7 @@ __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
 }
 
-configure_timeout() {
+configure_boot() {
     local has_systemd_boot=$(cat "$STATE_DIR/has_systemd_boot")
     [ "$has_systemd_boot" != "true" ] && return 0
     
@@ -320,11 +232,6 @@ configure_timeout() {
     else
         echo "timeout 2" | sudo tee "$loader_conf" > /dev/null
     fi
-}
-
-configure_secureboot() {
-    local has_systemd_boot=$(cat "$STATE_DIR/has_systemd_boot")
-    [ "$has_systemd_boot" != "true" ] && return 0
     
     local motherboard_brand=$(cat "$STATE_DIR/motherboard_brand")
     
@@ -371,27 +278,20 @@ configure_secureboot() {
 
 main() {
     detect_distro
-    detect_cpu
-    detect_gpu
-    detect_motherboard_brand
+    detect_hardware
     detect_systemd_boot
     
     select_desktop
-    select_extras
-    setup_sources
+    setup_pacman
+    setup_extra_environment
     
-    install_cpu_microcode
-    install_gpu_drivers
+    install_microcode_drivers
     install_base_packages
-    install_extras
     install_desktop
     
-    configure_flatpak
-    configure_firmware
     configure_firewall
     configure_performance
-    configure_timeout
-    configure_secureboot
+    configure_boot
     
     echo ""
     echo "${GREEN}Instalação concluída!${NC}"
