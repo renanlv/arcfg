@@ -142,10 +142,7 @@ select_desktop() {
 }
 
 setup_pacman() {
-    if [ ! -f /etc/pacman.conf ]; then
-        echo "${RED}Arquivo /etc/pacman.conf não encontrado!${NC}"
-        exit 1
-    fi
+    [ -f /etc/pacman.conf ] || exit 1
     
     sudo sed -i 's/^#Color/Color/' /etc/pacman.conf
     sudo sed -i '/Color/a ILoveCandy' /etc/pacman.conf
