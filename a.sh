@@ -183,7 +183,7 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-keyring gnome-text-editor gnome-software gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-keyring gnome-text-editor baobab gnome-software gnome-backgrounds
             sudo systemctl enable gdm
             ;;
         kde)
