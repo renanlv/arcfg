@@ -142,6 +142,11 @@ select_desktop() {
 }
 
 setup_pacman() {
+    if [ ! -f /etc/pacman.conf ]; then
+        echo "${RED}Arquivo /etc/pacman.conf não encontrado!${NC}"
+        exit 1
+    fi
+    
     sudo sed -i 's/^#Color/Color/' /etc/pacman.conf
     sudo sed -i '/Color/a ILoveCandy' /etc/pacman.conf
     sudo sed -i '/^ParallelDownloads/d' /etc/pacman.conf
@@ -155,12 +160,6 @@ setup_pacman() {
     echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
     
     sudo pacman -Syu --noconfirm
-}
-
-setup_extra_environment() {
-    sudo pacman -S --noconfirm fwupd flatpak gamemode
-    sudo systemctl enable fwupd-refresh.timer
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 install_microcode_drivers() {
@@ -179,7 +178,9 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit arch-update
+    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit arch-update fwupd flatpak gamemode
+    sudo systemctl enable fwupd-refresh.timer
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 install_desktop() {
@@ -282,7 +283,6 @@ main() {
     
     select_desktop
     setup_pacman
-    setup_extra_environment
     
     install_microcode_drivers
     install_base_packages
