@@ -175,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit arch-update fwupd flatpak gamemode
+    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit gamemode fwupd arch-update flatpak
 }
 
 install_desktop() {
