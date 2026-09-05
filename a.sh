@@ -183,15 +183,15 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-text-editor gnome-keyring loupe gnome-software gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-software gnome-backgrounds
             sudo systemctl enable gdm
             ;;
         kde)
-            sudo pacman -S --noconfirm plasma-meta konsole dolphin dolphin-plugins partitionmanager filelight gwenview kate ark 
+            sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight ark 
             sudo systemctl enable plasmalogin
             ;;
         cosmic)
-            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-text-editor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
             sudo systemctl enable cosmic-greeter
             ;;
     esac
