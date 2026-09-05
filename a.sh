@@ -179,8 +179,6 @@ install_microcode_drivers() {
 
 install_base_packages() {
     sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit arch-update fwupd flatpak gamemode
-    sudo systemctl enable fwupd-refresh.timer
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 install_desktop() {
