@@ -142,6 +142,8 @@ select_desktop() {
 }
 
 setup_pacman() {
+    [ -f /etc/pacman.conf ] || exit 1
+    
     sudo sed -i 's/^#Color/Color/' /etc/pacman.conf
     sudo sed -i '/Color/a ILoveCandy' /etc/pacman.conf
     sudo sed -i '/^ParallelDownloads/d' /etc/pacman.conf
@@ -155,12 +157,6 @@ setup_pacman() {
     echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
     
     sudo pacman -Syu --noconfirm
-}
-
-setup_extra_environment() {
-    sudo pacman -S --noconfirm fwupd flatpak gamemode
-    sudo systemctl enable fwupd-refresh.timer
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
 install_microcode_drivers() {
@@ -179,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 fastfetch msedit arch-update
+    sudo pacman -S --noconfirm git 7zip aria2 flatpak fastfetch msedit gamemode fwupd arch-update
 }
 
 install_desktop() {
@@ -187,15 +183,15 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-software gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-keyring gnome-text-editor gnome-software gnome-backgrounds
             sudo systemctl enable gdm
             ;;
         kde)
-            sudo pacman -S --noconfirm plasma-meta konsole dolphin dolphin-plugins partitionmanager ark 
+            sudo pacman -S --noconfirm plasma-meta konsole dolphin dolphin-plugins partitionmanager filelight kate ark 
             sudo systemctl enable plasmalogin
             ;;
         cosmic)
-            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-text-editor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
             sudo systemctl enable cosmic-greeter
             ;;
     esac
@@ -282,7 +278,6 @@ main() {
     
     select_desktop
     setup_pacman
-    setup_extra_environment
     
     install_microcode_drivers
     install_base_packages
