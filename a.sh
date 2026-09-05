@@ -191,7 +191,7 @@ install_desktop() {
             sudo systemctl enable plasmalogin
             ;;
         cosmic)
-            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-text-editor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+            sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
             sudo systemctl enable cosmic-greeter
             ;;
     esac
