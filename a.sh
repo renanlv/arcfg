@@ -187,7 +187,7 @@ install_desktop() {
             sudo systemctl enable gdm
             ;;
         kde)
-            sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight ark 
+            sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark 
             sudo systemctl enable plasmalogin
             ;;
         cosmic)
