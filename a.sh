@@ -175,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm git 7zip aria2 gstreamer ffmpeg flatpak tealdeer fastfetch msedit gamemode fwupd arch-update
+    sudo pacman -S --noconfirm git 7zip aria2 ffmpeg flatpak tealdeer fastfetch msedit gamemode fwupd arch-update
 }
 
 install_desktop() {
