@@ -183,7 +183,7 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-software gnome-text-editor gnome-calculator loupe showtime gnome-backgrounds gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility gnome-software gnome-text-editor gnome-calculator loupe showtime gnome-backgrounds
             sudo systemctl enable gdm
             ;;
         kde)
