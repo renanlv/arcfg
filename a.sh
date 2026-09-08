@@ -183,11 +183,11 @@ install_desktop() {
     
     case "$desktop" in
         gnome)
-            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility baobab gnome-software gnome-text-editor gnome-calculator loupe showtime gnome-backgrounds
+            sudo pacman -S --noconfirm gnome-initial-setup gnome-console gnome-system-monitor gnome-disk-utility baobab gnome-software gnome-text-editor gnome-calculator decibels loupe showtime gnome-backgrounds
             sudo systemctl enable gdm
             ;;
         kde)
-            sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark 
+            sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc elisa gwenview haruna ark 
             sudo systemctl enable plasmalogin
             ;;
         cosmic)
