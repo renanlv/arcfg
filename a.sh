@@ -175,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm 7zip gamemode flatpak fastfetch 
+    sudo pacman -S --noconfirm 7zip gamemode flatpak fastfetch msedit
 }
 
 install_desktop() {
