@@ -7,21 +7,21 @@ detect_system() {
         exit 1
     fi
     
-    local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
-    if echo "$cpu_info" | grep -qi "intel"; then
+    CPU=$(cat /proc/cpuinfo 2>/dev/null)
+    if echo "$CPU" | grep -qi "intel"; then
         CPU="intel"
-    elif echo "$cpu_info" | grep -qi "amd"; then
+    elif echo "$CPU" | grep -qi "amd"; then
         CPU="amd"
     else
         CPU="intel"
     fi
     
-    local gpu_info=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
-    if echo "$gpu_info" | grep -qi "nvidia"; then
+    GPU=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
+    if echo "$GPU" | grep -qi "nvidia"; then
         GPU="nvidia"
-    elif echo "$gpu_info" | grep -qi "amd\|radeon"; then
+    elif echo "$GPU" | grep -qi "amd\|radeon"; then
         GPU="amd"
-    elif echo "$gpu_info" | grep -qi "intel"; then
+    elif echo "$GPU" | grep -qi "intel"; then
         GPU="intel"
     else
         GPU="nvidia"
