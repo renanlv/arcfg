@@ -231,7 +231,7 @@ configure_boot() {
     local motherboard_brand=$(cat "$STATE_DIR/motherboard_brand")
     
     if ! command -v sbctl &>/dev/null; then
-        sudo pacman -S --noconfirm sbctl fwupd
+        sudo pacman -S --noconfirm sbctl fwupd msedit
     fi
     
     if ! sudo sbctl status 2>/dev/null | grep -q "Setup Mode.*Enabled"; then
