@@ -175,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm 7zip gamemode fastfetch msedit arch-update 
+    sudo pacman -S --noconfirm git 7zip aria2 tealdeer fastfetch msedit gamemode fwupd flatpak arch-update
 }
 
 install_desktop() {
@@ -231,7 +231,7 @@ configure_boot() {
     local motherboard_brand=$(cat "$STATE_DIR/motherboard_brand")
     
     if ! command -v sbctl &>/dev/null; then
-        sudo pacman -S --noconfirm sbctl fwupd
+        sudo pacman -S --noconfirm sbctl
     fi
     
     if ! sudo sbctl status 2>/dev/null | grep -q "Setup Mode.*Enabled"; then
