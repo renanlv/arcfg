@@ -175,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm 7zip gamemode fwupd flatpak arch-update
+    sudo pacman -S --noconfirm gamemode fwupd flatpak fastfetch arch-update
 }
 
 install_desktop() {
