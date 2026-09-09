@@ -88,10 +88,8 @@ main() {
     install_packages
     install_cosmic
     setup_system
-    
     echo ""
     echo -e '\e[32mInstalação concluída!\e[0m'
-    echo -e '\e[33mReinicie o sistema para concluir a instalação.\e[0m'
 }
 
 main
