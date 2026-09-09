@@ -3,25 +3,25 @@ set -euo pipefail
 
 detect_system() {
     if [ ! -f /etc/arch-release ]; then
-        echo "Este script é apenas para Arch Linux!"
+        echo -e '\e[31mEste script é apenas para Arch Linux!\e[0m'
         exit 1
     fi
     
-    CPU=$(cat /proc/cpuinfo 2>/dev/null)
-    if echo "$CPU" | grep -qi "intel"; then
+    local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
+    if echo "$cpu_info" | grep -qi "intel"; then
         CPU="intel"
-    elif echo "$CPU" | grep -qi "amd"; then
+    elif echo "$cpu_info" | grep -qi "amd"; then
         CPU="amd"
     else
         CPU="intel"
     fi
     
-    GPU=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
-    if echo "$GPU" | grep -qi "nvidia"; then
+    local gpu_info=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
+    if echo "$gpu_info" | grep -qi "nvidia"; then
         GPU="nvidia"
-    elif echo "$GPU" | grep -qi "amd\|radeon"; then
+    elif echo "$gpu_info" | grep -qi "amd\|radeon"; then
         GPU="amd"
-    elif echo "$GPU" | grep -qi "intel"; then
+    elif echo "$gpu_info" | grep -qi "intel"; then
         GPU="intel"
     else
         GPU="nvidia"
@@ -71,11 +71,12 @@ install_packages() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update
+    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update fwupd
 }
 
 install_cosmic() {
     sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+    
     sudo systemctl enable cosmic-greeter
 }
 
@@ -87,7 +88,8 @@ main() {
     install_cosmic
     
     echo ""
-    echo "Instalação concluída!"
+    echo -e '\e[32mInstalação concluída!\e[0m'
+    echo -e '\e[33mReinicie o sistema para concluir a instalação.\e[0m'
 }
 
 main
