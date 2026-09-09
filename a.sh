@@ -175,7 +175,7 @@ install_microcode_drivers() {
 }
 
 install_base_packages() {
-    sudo pacman -S --noconfirm 7zip gamemode fastfetch fwupd arch-update 
+    sudo pacman -S --noconfirm 7zip gamemode fastfetch msedit arch-update 
 }
 
 install_desktop() {
@@ -231,7 +231,7 @@ configure_boot() {
     local motherboard_brand=$(cat "$STATE_DIR/motherboard_brand")
     
     if ! command -v sbctl &>/dev/null; then
-        sudo pacman -S --noconfirm sbctl
+        sudo pacman -S --noconfirm sbctl fwupd 
     fi
     
     if ! sudo sbctl status 2>/dev/null | grep -q "Setup Mode.*Enabled"; then
