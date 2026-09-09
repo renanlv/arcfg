@@ -9,22 +9,22 @@ detect_system() {
     
     local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
     if echo "$cpu_info" | grep -qi "intel"; then
-        echo "intel" > /tmp/cpu
+        CPU="intel"
     elif echo "$cpu_info" | grep -qi "amd"; then
-        echo "amd" > /tmp/cpu
+        CPU="amd"
     else
-        echo "intel" > /tmp/cpu
+        CPU="intel"
     fi
     
     local gpu_info=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
     if echo "$gpu_info" | grep -qi "nvidia"; then
-        echo "nvidia" > /tmp/gpu
+        GPU="nvidia"
     elif echo "$gpu_info" | grep -qi "amd\|radeon"; then
-        echo "amd" > /tmp/gpu
+        GPU="amd"
     elif echo "$gpu_info" | grep -qi "intel"; then
-        echo "intel" > /tmp/gpu
+        GPU="intel"
     else
-        echo "nvidia" > /tmp/gpu
+        GPU="nvidia"
     fi
 }
 
@@ -60,14 +60,12 @@ EOF
 }
 
 install_packages() {
-    local cpu=$(cat /tmp/cpu)
-    case "$cpu" in
+    case "$CPU" in
         intel) sudo pacman -S --noconfirm intel-ucode ;;
         amd) sudo pacman -S --noconfirm amd-ucode ;;
     esac
     
-    local gpu=$(cat /tmp/gpu)
-    case "$gpu" in
+    case "$GPU" in
         intel) sudo pacman -S --noconfirm vulkan-intel ;;
         amd) sudo pacman -S --noconfirm vulkan-radeon ;;
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
