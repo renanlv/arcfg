@@ -2,11 +2,6 @@
 set -euo pipefail
 
 detect_system() {
-    if [ ! -f /etc/arch-release ]; then
-        echo -e '\e[31mEste script é apenas para Arch Linux!\e[0m'
-        exit 1
-    fi
-    
     local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
     if echo "$cpu_info" | grep -qi "intel"; then
         CPU="intel"
@@ -25,6 +20,12 @@ detect_system() {
         GPU="intel"
     else
         GPU="nvidia"
+    fi
+    
+    if [ -d /sys/block/nvme* ] 2>/dev/null || [ -d /sys/block/sd* ] 2>/dev/null; then
+        SSD=true
+    else
+        SSD=false
     fi
 }
 
@@ -57,7 +58,11 @@ install_packages() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update fwupd
+    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update
+    
+    if [ "$SSD" = true ]; then
+        sudo systemctl enable fstrim.timer
+    fi
 }
 
 install_cosmic() {
@@ -69,9 +74,6 @@ setup_system() {
     sudo ufw reload
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
-    
-    sudo systemctl enable fstrim.timer
-    sudo systemctl enable fwupd-refresh.timer
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
