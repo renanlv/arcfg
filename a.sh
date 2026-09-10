@@ -60,10 +60,11 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm arch-update fwupd reflector power-profiles-daemon
+    sudo pacman -S --noconfirm arch-update fwupd reflector earlyoom power-profiles-daemon
     sudo systemctl enable fstrim.timer
     sudo systemctl enable fwupd-refresh.timer
     sudo systemctl enable reflector.timer
+    sudo systemctl enable earlyoom
     sudo systemctl enable power-profiles-daemon
     
     sudo mkdir -p /etc/environment.d
@@ -74,11 +75,11 @@ EOF
     
     sudo tee /etc/xdg/reflector/reflector.conf > /dev/null <<EOF
 --save /etc/pacman.d/mirrorlist
---protocol https
 --latest 10
 --sort rate
---country Brazil,Worldwide
 --age 12
+--protocol https
+--country "Brazil,United States"
 EOF
 }
 
