@@ -21,12 +21,6 @@ detect_system() {
     else
         GPU="nvidia"
     fi
-    
-    if [ -d /sys/block/nvme* ] 2>/dev/null || [ -d /sys/block/sd* ] 2>/dev/null; then
-        SSD=true
-    else
-        SSD=false
-    fi
 }
 
 setup_sources() {
@@ -46,7 +40,7 @@ setup_sources() {
     sudo pacman -Syu --noconfirm
 }
 
-install_packages() {
+install_base() {
     case "$CPU" in
         intel) sudo pacman -S --noconfirm intel-ucode ;;
         amd) sudo pacman -S --noconfirm amd-ucode ;;
@@ -58,16 +52,11 @@ install_packages() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update
+    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update fwupd reflector
     
-    if [ "$SSD" = true ]; then
-        sudo systemctl enable fstrim.timer
-    fi
-}
-
-install_cosmic() {
-    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
-    sudo systemctl enable cosmic-greeter
+    sudo systemctl enable fstrim.timer
+    sudo systemctl enable fwupd-refresh.timer
+    sudo systemctl enable reflector.timer
 }
 
 setup_system() {
@@ -80,15 +69,28 @@ setup_system() {
 MESA_SHADER_CACHE_MAX_SIZE=12G
 __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
+    
+    sudo tee /etc/xdg/reflector/reflector.conf > /dev/null <<EOF
+--save /etc/pacman.d/mirrorlist
+--protocol https
+--latest 20
+--sort rate
+--country Brazil,Worldwide
+--age 12
+EOF
+}
+
+install_desktop() {
+    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+    sudo systemctl enable cosmic-greeter
 }
 
 main() {
     detect_system
     setup_sources
-    install_packages
-    install_cosmic
+    install_base
     setup_system
-    echo ""
+    install_desktop
     echo -e '\e[32mInstalação concluída!\e[0m'
 }
 
