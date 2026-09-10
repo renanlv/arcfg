@@ -60,9 +60,8 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm gamemode earlyoom fwupd reflector power-profiles-daemon
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
-    sudo usermod -aG gamemode "$USER"
+    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon earlyoom ananicy-cpp cachyos-ananicy-rules-git
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom ananicy-cpp
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
