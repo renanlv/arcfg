@@ -52,9 +52,7 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip fish
-    sudo chsh -s /usr/bin/fish "$USER"
-    fish -c 'set -U fish_greeting ""'
+    sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip
 }
 
 setup_system() {
@@ -62,8 +60,9 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon earlyoom ananicy-cpp cachyos-ananicy-rules-git
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom ananicy-cpp
+    sudo pacman -S --noconfirm gamemode earlyoom fwupd reflector power-profiles-daemon
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
+    sudo usermod -aG gamemode "$USER"
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
@@ -92,6 +91,7 @@ main() {
     install_base
     setup_system
     install_desktop
+    echo -e '\e[32mInstalação concluída!\e[0m'
 }
 
 main
