@@ -52,7 +52,7 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode flatpak
+    sudo pacman -S --noconfirm gamemode flatpak fastfetch msedit 7zip
 }
 
 setup_system() {
@@ -60,8 +60,7 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm arch-update libnotify fwupd reflector power-profiles-daemon
-    arch-update --check --enable
+    sudo pacman -S --noconfirm arch-update fwupd reflector power-profiles-daemon
     sudo systemctl enable fstrim.timer
     sudo systemctl enable fwupd-refresh.timer
     sudo systemctl enable reflector.timer
