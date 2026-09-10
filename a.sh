@@ -52,7 +52,7 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode
+    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode flatpak
 }
 
 setup_system() {
@@ -60,11 +60,12 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm fwupd reflector arch-update
+    sudo pacman -S --noconfirm arch-update libnotify fwupd reflector power-profiles-daemon
+    arch-update --check --enable
     sudo systemctl enable fstrim.timer
     sudo systemctl enable fwupd-refresh.timer
     sudo systemctl enable reflector.timer
-    sudo systemctl enable paccache.timer
+    sudo systemctl enable power-profiles-daemon
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
@@ -83,9 +84,8 @@ EOF
 }
 
 install_desktop() {
-    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs system76-power
+    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
     sudo systemctl enable cosmic-greeter
-    sudo systemctl enable com.system76.PowerDaemon.service
 }
 
 main() {
