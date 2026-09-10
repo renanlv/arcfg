@@ -90,7 +90,6 @@ main() {
     install_base
     setup_system
     install_desktop
-    echo -e '\e[32mInstalação concluída!\e[0m'
 }
 
 main
