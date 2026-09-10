@@ -52,7 +52,7 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm gamemode flatpak fastfetch msedit 7zip
+    sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip
 }
 
 setup_system() {
@@ -60,12 +60,9 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm arch-update fwupd reflector earlyoom power-profiles-daemon
-    sudo systemctl enable fstrim.timer
-    sudo systemctl enable fwupd-refresh.timer
-    sudo systemctl enable reflector.timer
-    sudo systemctl enable earlyoom
-    sudo systemctl enable power-profiles-daemon
+    sudo pacman -S --noconfirm gamemode earlyoom fwupd reflector power-profiles-daemon
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
+    sudo usermod -aG gamemode "$USER"
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
