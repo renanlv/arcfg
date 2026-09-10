@@ -52,17 +52,19 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode arch-update fwupd reflector
-    
-    sudo systemctl enable fstrim.timer
-    sudo systemctl enable fwupd-refresh.timer
-    sudo systemctl enable reflector.timer
+    sudo pacman -S --noconfirm fastfetch msedit 7zip gamemode
 }
 
 setup_system() {
     sudo ufw reload
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
+    
+    sudo pacman -S --noconfirm fwupd reflector arch-update
+    sudo systemctl enable fstrim.timer
+    sudo systemctl enable fwupd-refresh.timer
+    sudo systemctl enable reflector.timer
+    sudo systemctl enable paccache.timer
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
@@ -73,7 +75,7 @@ EOF
     sudo tee /etc/xdg/reflector/reflector.conf > /dev/null <<EOF
 --save /etc/pacman.d/mirrorlist
 --protocol https
---latest 20
+--latest 10
 --sort rate
 --country Brazil,Worldwide
 --age 12
@@ -81,8 +83,9 @@ EOF
 }
 
 install_desktop() {
-    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs
+    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-desktop-portal-gtk xdg-user-dirs system76-power
     sudo systemctl enable cosmic-greeter
+    sudo systemctl enable com.system76.PowerDaemon.service
 }
 
 main() {
