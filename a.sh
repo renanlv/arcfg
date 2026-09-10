@@ -60,9 +60,8 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm gamemode earlyoom fwupd reflector power-profiles-daemon
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
-    sudo usermod -aG gamemode "$USER"
+    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon earlyoom ananicy-cpp cachyos-ananicy-rules-git
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom ananicy-cpp
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
@@ -81,8 +80,14 @@ EOF
 }
 
 install_desktop() {
-    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
-    sudo systemctl enable cosmic-greeter
+    read -p "Instalar Cosmic Desktop? [S/n] " choice
+    if [[ "$choice" =~ ^[Nn]$ ]]; then
+        sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark xdg-user-dirs xdg-desktop-portal-gtk
+        sudo systemctl enable plasmalogin
+    else
+        sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
+        sudo systemctl enable cosmic-greeter
+    fi
 }
 
 main() {
@@ -91,7 +96,6 @@ main() {
     install_base
     setup_system
     install_desktop
-    echo -e '\e[32mInstalação concluída!\e[0m'
 }
 
 main
