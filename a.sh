@@ -53,8 +53,8 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm gamemode fwupd reflector power-profiles-daemon earlyoom
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom
+    sudo pacman -S --noconfirm gamemode fwupd reflector power-profiles-daemon earlyoom pacman-contrib
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom paccache.timer
     sudo usermod -aG gamemode "$USER"
     
     sudo mkdir -p /etc/environment.d
@@ -98,7 +98,7 @@ fi
 
 sudo pacman -Syu --noconfirm || exit 1
 
-sudo pacman -Sc --noconfirm || true
+sudo paccache -r || true
 
 if command -v flatpak >/dev/null 2>&1; then
     flatpak uninstall --unused --delete-data -y || true
