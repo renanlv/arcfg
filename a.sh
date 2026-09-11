@@ -80,7 +80,7 @@ EOF
 }
 
 install_desktop() {
-    read -rp "Instalar COSMIC desktop? [S/n]: " choice && if [[ "${choice,,}" == "n" ]]; then
+    read -rp "Instalar COSMIC desktop? [S/n]: " choice; if [[ "${choice,,}" == "n" ]]; then
         sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark
         sudo systemctl enable plasmalogin
     else
