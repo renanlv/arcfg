@@ -63,7 +63,8 @@ ManagedOOMMemoryPressure=kill
 ManagedOOMMemoryPressureLimit=50%
 EOF
     
-    sudo systemctl edit --force -- -.slice <<EOF
+    sudo mkdir -p /etc/systemd/system/-.slice.d
+    sudo tee /etc/systemd/system/-.slice.d/override.conf > /dev/null <<EOF
 [Slice]
 ManagedOOMSwap=kill
 EOF
