@@ -53,8 +53,30 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon earlyoom
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom
+    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon
+    
+    sudo mkdir -p /etc/systemd/system/user@.service.d
+    sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
+[Service]
+ManagedOOMMemoryPressure=kill
+ManagedOOMMemoryPressureLimit=50%
+EOF
+    
+    sudo systemctl edit --force -- -.slice <<EOF
+[Slice]
+ManagedOOMSwap=kill
+EOF
+    
+    sudo sed -i 's/^#DefaultMemoryAccounting=.*/DefaultMemoryAccounting=yes/' /etc/systemd/system.conf
+    
+    sudo tee /etc/systemd/oomd.conf > /dev/null <<EOF
+[OOM]
+SwapUsedLimitPercent=90%
+DefaultMemoryPressureDurationSec=20s
+EOF
+    
+    sudo systemctl enable --now systemd-oomd
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
