@@ -53,8 +53,7 @@ install_base() {
     esac
     
     sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip fish
-    sudo chsh -s /usr/bin/fish "$USER"
-    fish -c 'set -U fish_greeting ""'
+    chsh -s /usr/bin/fish
 }
 
 setup_system() {
