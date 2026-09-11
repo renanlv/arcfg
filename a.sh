@@ -52,12 +52,10 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm arch-update flatpak fastfetch micro 7zip fish
+    sudo pacman -S --noconfirm flatpak fastfetch msedit 7zip
 }
 
 setup_system() {
-    sudo sed -i 's|^SHELL=.*|SHELL=/usr/bin/fish|' /etc/default/useradd
-    
     sudo ufw reload
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
@@ -86,12 +84,65 @@ install_desktop() {
     sudo systemctl enable cosmic-greeter
 }
 
+install_updater() {
+    sudo tee /usr/local/bin/system-update > /dev/null <<'EOF'
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v pacman >/dev/null 2>&1; then
+    exit 1
+fi
+
+if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
+    exit 1
+fi
+
+orphans=$(pacman -Qdtq 2>/dev/null || true)
+if [ -n "$orphans" ]; then
+    sudo pacman -Rns $orphans --noconfirm || true
+fi
+
+sudo pacman -Syu --noconfirm || exit 1
+
+sudo pacman -Sc --noconfirm || true
+
+if command -v flatpak >/dev/null 2>&1; then
+    flatpak uninstall --unused --delete-data -y || true
+    flatpak update -y || true
+fi
+
+if [ -n "$(find /etc -name '*.pacnew' -o -name '*.pacsave' 2>/dev/null)" ]; then
+    sudo pacdiff --noconfirm || true
+fi
+
+if [ -f /var/run/reboot-required ]; then
+    notify-send "Atualização concluída" "Reinicialização necessária"
+else
+    notify-send "Atualização concluída" "Sistema atualizado com sucesso"
+fi
+EOF
+
+    sudo chmod +x /usr/local/bin/system-update
+
+    sudo tee /usr/share/applications/system-update.desktop > /dev/null <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=System Update
+Comment=Atualiza o sistema
+Exec=/usr/local/bin/system-update
+Icon=system-software-update
+Terminal=true
+Categories=System;
+EOF
+}
+
 main() {
     detect_system
     setup_sources
     install_base
     setup_system
     install_desktop
+    install_updater
 }
 
 main
