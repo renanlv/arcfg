@@ -52,7 +52,9 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip
+    sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip fish
+    sudo chsh -s /usr/bin/fish "$USER"
+    fish -c 'set -U fish_greeting ""'
 }
 
 setup_system() {
@@ -80,13 +82,8 @@ EOF
 }
 
 install_desktop() {
-    read -rp "Instalar COSMIC desktop? [S/n]: " choice; if [[ "${choice,,}" == "n" ]]; then
-        sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark
-        sudo systemctl enable plasmalogin
-    else
-        sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
-        sudo systemctl enable cosmic-greeter
-    fi
+    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
+    sudo systemctl enable cosmic-greeter
 }
 
 main() {
