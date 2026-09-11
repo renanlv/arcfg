@@ -109,11 +109,9 @@ if [ -n "$(find /etc -name '*.pacnew' -o -name '*.pacsave' 2>/dev/null)" ]; then
     sudo pacdiff --noconfirm || true
 fi
 
-if [ -f /var/run/reboot-required ]; then
-    notify-send "Atualização concluída" "Reinicialização necessária"
-else
-    notify-send "Atualização concluída" "Sistema atualizado com sucesso"
-fi
+echo ""
+echo "Sistema atualizado com sucesso, pressione enter para sair"
+read -r
 EOF
 
     sudo chmod +x /usr/local/bin/system-update
