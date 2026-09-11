@@ -91,14 +91,19 @@ if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
     exit 1
 fi
 
+updates=$(checkupdates 2>/dev/null || true)
+if [ -n "$updates" ]; then
+    echo "Pacotes que serão atualizados:"
+    echo "$updates"
+    echo ""
+fi
+
 orphans=$(pacman -Qdtq 2>/dev/null || true)
 if [ -n "$orphans" ]; then
     sudo pacman -Rns $orphans --noconfirm || true
 fi
 
 sudo pacman -Syu --noconfirm || exit 1
-
-sudo paccache -r || true
 
 if command -v flatpak >/dev/null 2>&1; then
     flatpak uninstall --unused --delete-data -y || true
