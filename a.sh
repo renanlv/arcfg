@@ -93,16 +93,16 @@ fi
 
 sudo pacman -Syu --noconfirm || exit 1
 
-orphans=$(pacman -Qdtq 2>/dev/null || true)
+orphans=$(pacman -Qdtq 2>/dev/null)
 if [ -n "$orphans" ]; then
-    sudo pacman -Rnsu $orphans --noconfirm || true
+    sudo pacman -Rnsu $orphans --noconfirm
 fi
 
-sudo pacman -Sc --noconfirm || true
+sudo pacman -Sc --noconfirm
 
 if command -v flatpak >/dev/null 2>&1; then
-    flatpak uninstall --unused --delete-data -y || true
-    flatpak update -y || true
+    flatpak uninstall --unused --delete-data -y
+    flatpak update -y
 fi
 
 echo ""
