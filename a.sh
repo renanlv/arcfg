@@ -73,7 +73,7 @@ EOF
     
     sudo tee /etc/systemd/oomd.conf > /dev/null <<EOF
 [OOM]
-SwapUsedLimitPercent=90%
+SwapUsedLimit=90%
 DefaultMemoryPressureDurationSec=20s
 EOF
     
