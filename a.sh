@@ -52,11 +52,12 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm arch-update flatpak fastfetch msedit 7zip fish
-    chsh -s /usr/bin/fish
+    sudo pacman -S --noconfirm arch-update flatpak fastfetch micro 7zip fish
 }
 
 setup_system() {
+    sudo sed -i 's|^SHELL=.*|SHELL=/usr/bin/fish|' /etc/default/useradd
+    
     sudo ufw reload
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
