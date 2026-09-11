@@ -53,8 +53,8 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm gamemode fwupd reflector power-profiles-daemon earlyoom pacman-contrib
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom paccache.timer
+    sudo pacman -S --noconfirm gamemode fwupd reflector power-profiles-daemon earlyoom
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon earlyoom
     sudo usermod -aG gamemode "$USER"
     
     sudo mkdir -p /etc/environment.d
@@ -91,27 +91,18 @@ if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
     exit 1
 fi
 
-updates=$(checkupdates 2>/dev/null || true)
-if [ -n "$updates" ]; then
-    echo "Pacotes que serão atualizados:"
-    echo "$updates"
-    echo ""
-fi
+sudo pacman -Syu --noconfirm || exit 1
 
 orphans=$(pacman -Qdtq 2>/dev/null || true)
 if [ -n "$orphans" ]; then
-    sudo pacman -Rns $orphans --noconfirm || true
+    sudo pacman -Rnsu $orphans --noconfirm || true
 fi
 
-sudo pacman -Syu --noconfirm || exit 1
+sudo pacman -Sc --noconfirm || true
 
 if command -v flatpak >/dev/null 2>&1; then
     flatpak uninstall --unused --delete-data -y || true
     flatpak update -y || true
-fi
-
-if [ -n "$(find /etc -name '*.pacnew' -o -name '*.pacsave' 2>/dev/null)" ]; then
-    sudo pacdiff --noconfirm || true
 fi
 
 echo ""
