@@ -82,7 +82,7 @@ setup_oomd() {
     sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
 [Service]
 ManagedOOMMemoryPressure=kill
-ManagedOOMMemoryPressureLimit=80%
+ManagedOOMMemoryPressureLimit=50%
 EOF
     
     sudo mkdir -p /etc/systemd/oomd.conf.d
