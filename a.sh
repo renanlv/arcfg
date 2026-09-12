@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+if [ ! -f /etc/arch-release ]; then
+    echo -e '\e[31mEste script é apenas para Arch Linux!\e[0m'
+    exit 1
+fi
+
 detect_system() {
     local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
     if echo "$cpu_info" | grep -qi "intel"; then
@@ -72,23 +77,6 @@ __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
 }
 
-setup_zram() {
-    sudo mkdir -p /etc/systemd/zram-generator.conf.d
-    sudo tee /etc/systemd/zram-generator.conf.d/override.conf > /dev/null <<EOF
-[zram0]
-zram-size = min(ram / 2, 4096)
-compression-algorithm = zstd
-EOF
-    
-    sudo mkdir -p /etc/sysctl.d
-    sudo tee /etc/sysctl.d/99-vm-zram-parameters.conf > /dev/null <<EOF
-vm.swappiness = 180
-vm.watermark_boost_factor = 0
-vm.watermark_scale_factor = 125
-vm.page-cluster = 0
-EOF
-}
-
 setup_oomd() {
     sudo mkdir -p /etc/systemd/system/user@.service.d
     sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
@@ -101,23 +89,6 @@ EOF
     sudo tee /etc/systemd/system/-.slice.d/override.conf > /dev/null <<EOF
 [Slice]
 ManagedOOMSwap=kill
-EOF
-    
-    sudo mkdir -p /etc/systemd/system.conf.d
-    sudo tee /etc/systemd/system.conf.d/accounting.conf > /dev/null <<EOF
-[Manager]
-DefaultCPUAccounting=yes
-DefaultIOAccounting=yes
-DefaultMemoryAccounting=yes
-DefaultTasksAccounting=yes
-EOF
-    
-    sudo mkdir -p /etc/systemd/oomd.conf.d
-    sudo tee /etc/systemd/oomd.conf.d/override.conf > /dev/null <<EOF
-[OOM]
-SwapUsedLimit=90%
-DefaultMemoryPressureLimit=60%
-DefaultMemoryPressureDurationSec=20s
 EOF
     
     sudo systemctl enable --now systemd-oomd
@@ -184,10 +155,12 @@ main() {
     install_base
     setup_reflector
     setup_system
-    setup_zram
     setup_oomd
     install_desktop
     install_updater
+    
+    echo ""
+    echo -e '\e[32mInstalação concluída!\e[0m'
 }
 
 main
