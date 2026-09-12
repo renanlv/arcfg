@@ -84,7 +84,6 @@ setup_oomd() {
 ManagedOOMMemoryPressure=kill
 ManagedOOMMemoryPressureLimit=80%
 ManagedOOMMemoryPressureDurationSec=20s
-ManagedOOMSwap=kill
 EOF
     
     sudo systemctl enable --now systemd-oomd
