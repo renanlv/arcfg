@@ -27,7 +27,6 @@ setup_sources() {
     sudo sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
     sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
-    sudo sed -i 's/^options .*/options quiet splash/' /boot/loader/entries/*.conf
     
     sudo pacman -Syu --noconfirm
 }
