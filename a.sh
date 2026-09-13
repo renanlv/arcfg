@@ -103,8 +103,10 @@ if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
 fi
 
 if command -v flatpak >/dev/null 2>&1; then
-    flatpak update -y
-    flatpak uninstall --unused --delete-data -y
+    if [ -n "$(flatpak remote-ls --updates 2>/dev/null)" ]; then
+        flatpak update -y
+        flatpak uninstall --unused --delete-data -y
+    fi
 fi
 
 echo ""
