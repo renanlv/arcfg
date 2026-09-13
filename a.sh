@@ -1,7 +1,13 @@
 #!/bin/bash
 set -euo pipefail
+RED='\e[31m'
 GREEN='\e[32m'
 NC='\e[0m'
+
+if [ ! -f /etc/arch-release ]; then
+    echo -e "${RED}Este script é apenas para Arch Linux!${NC}"
+    exit 1
+fi
 
 setup_system() {
     sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
