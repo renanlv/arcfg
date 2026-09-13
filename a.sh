@@ -11,7 +11,7 @@ fi
 
 setup_system() {
     sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
-    sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
+    sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 10/' /etc/pacman.conf
     sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
     
     sudo pacman -Syu --noconfirm
@@ -32,8 +32,8 @@ install_base() {
 }
 
 setup_base() {
-    sudo pacman -S --noconfirm flatpak fwupd reflector power-profiles-daemon system76-scheduler
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon com.system76.Scheduler
+    sudo pacman -S --noconfirm flatpak fwupd reflector earlyoom power-profiles-daemon
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
     
     sudo sed -i 's|^#*\s*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
