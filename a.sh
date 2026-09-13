@@ -91,14 +91,16 @@ if ! id -nG "$USER" | grep -qw gamemode; then
     sudo usermod -aG gamemode "$USER"
 fi
 
-sudo pacman -Syu --noconfirm
-
-orphans=$(pacman -Qdtq 2>/dev/null)
-if [ -n "$orphans" ]; then
-    sudo pacman -Rnsu $orphans --noconfirm
+if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
+    sudo pacman -Syu --noconfirm
+    
+    orphans=$(pacman -Qdtq 2>/dev/null)
+    if [ -n "$orphans" ]; then
+        sudo pacman -Rnsu $orphans --noconfirm
+    fi
+    
+    sudo pacman -Sc --noconfirm
 fi
-
-sudo pacman -Sc --noconfirm
 
 if command -v flatpak >/dev/null 2>&1; then
     flatpak uninstall --unused --delete-data -y
