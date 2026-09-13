@@ -91,15 +91,17 @@ if ! id -nG "$USER" | grep -qw gamemode; then
     sudo usermod -aG gamemode "$USER"
 fi
 
-if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
-    sudo pacman -Syu --noconfirm
-    
-    orphans=$(pacman -Qdtq 2>/dev/null)
-    if [ -n "$orphans" ]; then
-        sudo pacman -Rnsu $orphans --noconfirm
+if command -v pacman >/dev/null 2>&1; then
+    if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
+        sudo pacman -Syu --noconfirm
+        
+        orphans=$(pacman -Qdtq 2>/dev/null)
+        if [ -n "$orphans" ]; then
+            sudo pacman -Rnsu $orphans --noconfirm
+        fi
+        
+        sudo pacman -Sc --noconfirm
     fi
-    
-    sudo pacman -Sc --noconfirm
 fi
 
 if command -v flatpak >/dev/null 2>&1; then
