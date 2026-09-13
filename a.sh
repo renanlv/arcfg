@@ -52,7 +52,7 @@ install_base() {
         nvidia) sudo pacman -S --noconfirm nvidia-open ;;
     esac
     
-    sudo pacman -S --noconfirm flatpak fastfetch msedit 7zip gamemode
+    sudo pacman -S --noconfirm flatpak fastfetch msedit 7zip
 }
 
 setup_system() {
@@ -60,8 +60,8 @@ setup_system() {
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
     
-    sudo pacman -S --noconfirm fwupd power-profiles-daemon reflector
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer power-profiles-daemon reflector.timer
+    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon system76-scheduler
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon com.system76.Scheduler
     
     sudo sed -i 's|^#*\s*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
@@ -92,10 +92,6 @@ NC='\e[0m'
 
 if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
     exit 1
-fi
-
-if ! id -nG "$USER" | grep -qw gamemode; then
-    sudo usermod -aG gamemode "$USER"
 fi
 
 if command -v pacman >/dev/null 2>&1; then
