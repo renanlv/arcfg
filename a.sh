@@ -14,6 +14,8 @@ setup_system() {
     sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
     sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
     
+    sudo pacman -Syu --noconfirm
+    
     sudo ufw reload
     sudo ufw allow 53317/udp
     sudo ufw allow 53317/tcp
@@ -23,8 +25,6 @@ setup_system() {
 MESA_SHADER_CACHE_MAX_SIZE=12G
 __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
-    
-    sudo pacman -Syu --noconfirm
 }
 
 install_base() {
