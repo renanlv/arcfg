@@ -73,41 +73,6 @@ __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
 }
 
-setup_oomd() {
-    sudo mkdir -p /etc/systemd/system/user@.service.d
-    sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
-[Service]
-Delegate=yes
-ManagedOOMMemoryPressure=kill
-ManagedOOMMemoryPressureLimit=50%
-EOF
-    
-    sudo mkdir -p /etc/systemd/system/user.slice.d
-    sudo tee /etc/systemd/system/user.slice.d/override.conf > /dev/null <<EOF
-[Slice]
-ManagedOOMSwap=kill
-EOF
-    
-    sudo mkdir -p /etc/systemd/system.conf.d
-    sudo tee /etc/systemd/system.conf.d/accounting.conf > /dev/null <<EOF
-[Manager]
-DefaultCPUAccounting=yes
-DefaultIOAccounting=yes
-DefaultMemoryAccounting=yes
-DefaultTasksAccounting=yes
-EOF
-    
-    sudo mkdir -p /etc/systemd/oomd.conf.d
-    sudo tee /etc/systemd/oomd.conf.d/override.conf > /dev/null <<EOF
-[OOM]
-SwapUsedLimit=90%
-DefaultMemoryPressureLimit=60%
-DefaultMemoryPressureDurationSec=20s
-EOF
-    
-    sudo systemctl enable --now systemd-oomd
-}
-
 install_desktop() {
     sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
     sudo systemctl enable cosmic-greeter
@@ -118,10 +83,6 @@ install_updater() {
 #!/bin/bash
 set -euo pipefail
 
-if ! command -v pacman >/dev/null 2>&1; then
-    exit 1
-fi
-
 if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
     exit 1
 fi
@@ -130,7 +91,7 @@ if ! id -nG "$USER" | grep -qw gamemode; then
     sudo usermod -aG gamemode "$USER"
 fi
 
-sudo pacman -Syu --noconfirm || exit 1
+sudo pacman -Syu --noconfirm
 
 orphans=$(pacman -Qdtq 2>/dev/null)
 if [ -n "$orphans" ]; then
@@ -168,7 +129,6 @@ main() {
     setup_sources
     install_base
     setup_system
-    setup_oomd
     install_desktop
     install_updater
     
