@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+RED='\e[31m'
+GREEN='\e[32m'
+NC='\e[0m'
+
 if [ ! -f /etc/arch-release ]; then
-    echo -e '\e[31mEste script é apenas para Arch Linux!\e[0m'
+    echo -e "${RED}Este script é apenas para Arch Linux!${NC}"
     exit 1
 fi
 
@@ -83,6 +87,9 @@ install_updater() {
 #!/bin/bash
 set -euo pipefail
 
+GREEN='\e[32m'
+NC='\e[0m'
+
 if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
     exit 1
 fi
@@ -112,7 +119,7 @@ if command -v flatpak >/dev/null 2>&1; then
 fi
 
 echo ""
-echo -e '\e[32mSistema atualizado com sucesso, pressione enter para sair\e[0m'
+echo -e "${GREEN}Sistema atualizado com sucesso, pressione enter para sair${NC}"
 read -r
 EOF
 
@@ -139,7 +146,7 @@ main() {
     install_updater
     
     echo ""
-    echo -e '\e[32mInstalação concluída!\e[0m'
+    echo -e "${GREEN}Instalação concluída!${NC}"
 }
 
 main
