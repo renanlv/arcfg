@@ -68,7 +68,9 @@ fi
 echo -e "${GREEN}Sistema atualizado com sucesso, pressione enter para sair${NC}"
 read -r
 EOF
+
     sudo chmod +x /usr/local/bin/system-update
+
     sudo tee /usr/share/applications/system-update.desktop > /dev/null <<'EOF'
 [Desktop Entry]
 Type=Application
