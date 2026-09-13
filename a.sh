@@ -89,6 +89,7 @@ main() {
     install_desktop
     setup_updater
     echo -e "${GREEN}Instalação concluída!${NC}"
+    echo -e "${GREEN}Reinicie o sistema para aplicar as alterações.${NC}"
 }
 
 main
