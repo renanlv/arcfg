@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-
 GREEN='\e[32m'
 NC='\e[0m'
 
@@ -23,11 +22,11 @@ EOF
 }
 
 install_base() {
-    sudo pacman -S --noconfirm intel-ucode nvidia-open fastfetch msedit 7zip flatpak
+    sudo pacman -S --noconfirm intel-ucode nvidia-open fastfetch msedit 7zip
 }
 
 setup_base() {
-    sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon system76-scheduler
+    sudo pacman -S --noconfirm flatpak fwupd reflector power-profiles-daemon system76-scheduler
     sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon com.system76.Scheduler
     
     sudo sed -i 's|^#*\s*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
@@ -47,20 +46,16 @@ setup_updater() {
     sudo tee /usr/local/bin/system-update > /dev/null <<'EOF'
 #!/bin/bash
 set -euo pipefail
-
 GREEN='\e[32m'
 NC='\e[0m'
 
 if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     sudo pacman -Syu --noconfirm
-    
     orphans=$(pacman -Qdtq 2>/dev/null)
     if [ -n "$orphans" ]; then
         sudo pacman -Rnsu $orphans --noconfirm
     fi
-    
     sudo pacman -Sc --noconfirm
-    
     flatpak uninstall --unused --delete-data -y
 fi
 
@@ -88,7 +83,6 @@ main() {
     setup_base
     install_desktop
     setup_updater
-    
     echo -e "${GREEN}Instalação concluída!${NC}"
 }
 
