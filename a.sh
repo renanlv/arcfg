@@ -78,13 +78,31 @@ EOF
 }
 
 setup_oomd() {
-    sudo mkdir -p /etc/systemd/system/user@.service.d
-    sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
-[Service]
+    sudo mkdir -p /etc/systemd/system/app.slice.d
+    sudo tee /etc/systemd/system/app.slice.d/override.conf > /dev/null <<EOF
+[Slice]
 ManagedOOMMemoryPressure=kill
 ManagedOOMMemoryPressureLimit=80%
-ManagedOOMMemoryPressureDurationSec=20s
-ManagedOOMSwap=kill
+EOF
+    
+    sudo mkdir -p /etc/systemd/system/session.slice.d
+    sudo tee /etc/systemd/system/session.slice.d/override.conf > /dev/null <<EOF
+[Slice]
+ManagedOOMMemoryPressure=kill
+ManagedOOMMemoryPressureLimit=80%
+EOF
+    
+    sudo mkdir -p /etc/systemd/system/background.slice.d
+    sudo tee /etc/systemd/system/background.slice.d/override.conf > /dev/null <<EOF
+[Slice]
+ManagedOOMMemoryPressure=kill
+ManagedOOMMemoryPressureLimit=80%
+EOF
+    
+    sudo mkdir -p /etc/systemd/oomd.conf.d
+    sudo tee /etc/systemd/oomd.conf.d/override.conf > /dev/null <<EOF
+[OOM]
+DefaultMemoryPressureDurationSec=20s
 EOF
     
     sudo systemctl enable --now systemd-oomd
