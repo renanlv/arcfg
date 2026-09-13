@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+GREEN='\e[32m'
+NC='\e[0m'
+
 setup_system() {
     sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
@@ -20,7 +23,7 @@ EOF
 }
 
 install_base() {
-    sudo pacman -S --noconfirm intel-ucode nvidia-open fastfetch msedit 7zip
+    sudo pacman -S --noconfirm intel-ucode nvidia-open fastfetch msedit 7zip flatpak
 }
 
 setup_base() {
@@ -48,21 +51,17 @@ set -euo pipefail
 GREEN='\e[32m'
 NC='\e[0m'
 
-if ! ping -c 1 archlinux.org >/dev/null 2>&1; then
-    exit 1
-fi
-
-if command -v pacman >/dev/null 2>&1; then
-    if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
-        sudo pacman -Syu --noconfirm
-        
-        orphans=$(pacman -Qdtq 2>/dev/null)
-        if [ -n "$orphans" ]; then
-            sudo pacman -Rnsu $orphans --noconfirm
-        fi
-        
-        sudo pacman -Sc --noconfirm
+if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
+    sudo pacman -Syu --noconfirm
+    
+    orphans=$(pacman -Qdtq 2>/dev/null)
+    if [ -n "$orphans" ]; then
+        sudo pacman -Rnsu $orphans --noconfirm
     fi
+    
+    sudo pacman -Sc --noconfirm
+    
+    flatpak uninstall --unused --delete-data -y
 fi
 
 echo ""
@@ -90,6 +89,9 @@ main() {
     setup_base
     install_desktop
     setup_updater
+    
+    echo ""
+    echo -e "${GREEN}Instalação concluída!${NC}"
 }
 
 main
