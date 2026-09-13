@@ -78,6 +78,13 @@ EOF
 }
 
 setup_oomd() {
+    sudo mkdir -p /etc/systemd/system/user@.service.d
+    sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
+[Service]
+ManagedOOMMemoryPressure=kill
+ManagedOOMMemoryPressureLimit=80%
+EOF
+    
     sudo mkdir -p /etc/systemd/system/app.slice.d
     sudo tee /etc/systemd/system/app.slice.d/override.conf > /dev/null <<EOF
 [Slice]
