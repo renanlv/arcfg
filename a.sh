@@ -61,6 +61,7 @@ if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     if [ -n "$orphans" ]; then
         sudo pacman -Rnsu $orphans --noconfirm
     fi
+    sudo pacman -Fy --noconfirm
     sudo pacman -Sc --noconfirm
     flatpak uninstall --unused --delete-data -y
 fi
@@ -89,7 +90,6 @@ main() {
     install_desktop
     setup_updater
     echo -e "${GREEN}Instalação concluída!${NC}"
-    echo -e "${GREEN}Reinicie o sistema para aplicar as alterações.${NC}"
 }
 
 main
