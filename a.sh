@@ -64,7 +64,6 @@ if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     flatpak uninstall --unused --delete-data -y
 fi
 
-echo ""
 echo -e "${GREEN}Sistema atualizado com sucesso, pressione enter para sair${NC}"
 read -r
 EOF
@@ -90,7 +89,6 @@ main() {
     install_desktop
     setup_updater
     
-    echo ""
     echo -e "${GREEN}Instalação concluída!${NC}"
 }
 
