@@ -51,68 +51,25 @@ install_base() {
     sudo pacman -S --noconfirm flatpak fastfetch msedit 7zip gamemode
 }
 
-setup_reflector() {
-    sudo pacman -S --noconfirm reflector
-    sudo systemctl enable reflector.timer
+setup_system() {
+    sudo ufw reload
+    sudo ufw allow 53317/udp
+    sudo ufw allow 53317/tcp
+    
+    sudo pacman -S --noconfirm fwupd power-profiles-daemon reflector
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer power-profiles-daemon reflector.timer
     
     sudo sed -i 's|^#--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#--latest .*/--latest 10\n--age 12/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
-}
-
-setup_system() {
-    sudo ufw reload
-    sudo ufw allow 53317/udp
-    sudo ufw allow 53317/tcp
-    
-    sudo pacman -S --noconfirm fwupd power-profiles-daemon
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer power-profiles-daemon
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
 MESA_SHADER_CACHE_MAX_SIZE=12G
 __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
-}
-
-setup_oomd() {
-    sudo mkdir -p /etc/systemd/system/user@.service.d
-    sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
-[Service]
-ManagedOOMMemoryPressure=kill
-ManagedOOMMemoryPressureLimit=80%
-EOF
-    
-    sudo mkdir -p /etc/systemd/system/app.slice.d
-    sudo tee /etc/systemd/system/app.slice.d/override.conf > /dev/null <<EOF
-[Slice]
-ManagedOOMMemoryPressure=kill
-ManagedOOMMemoryPressureLimit=80%
-EOF
-    
-    sudo mkdir -p /etc/systemd/system/session.slice.d
-    sudo tee /etc/systemd/system/session.slice.d/override.conf > /dev/null <<EOF
-[Slice]
-ManagedOOMMemoryPressure=kill
-ManagedOOMMemoryPressureLimit=80%
-EOF
-    
-    sudo mkdir -p /etc/systemd/system/background.slice.d
-    sudo tee /etc/systemd/system/background.slice.d/override.conf > /dev/null <<EOF
-[Slice]
-ManagedOOMMemoryPressure=kill
-ManagedOOMMemoryPressureLimit=80%
-EOF
-    
-    sudo mkdir -p /etc/systemd/oomd.conf.d
-    sudo tee /etc/systemd/oomd.conf.d/override.conf > /dev/null <<EOF
-[OOM]
-DefaultMemoryPressureDurationSec=20s
-EOF
-    
-    sudo systemctl enable --now systemd-oomd
 }
 
 install_desktop() {
@@ -174,9 +131,7 @@ main() {
     detect_system
     setup_sources
     install_base
-    setup_reflector
     setup_system
-    setup_oomd
     install_desktop
     install_updater
     
