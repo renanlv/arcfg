@@ -29,8 +29,8 @@ detect_system() {
 }
 
 setup_sources() {
-    sudo sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
-    sudo sed -i 's/^#ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
+    sudo sed -i 's/^#*Color/Color\nILoveCandy/' /etc/pacman.conf
+    sudo sed -i 's/^#*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
     sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
     
     sudo pacman -Syu --noconfirm
@@ -59,11 +59,11 @@ setup_system() {
     sudo pacman -S --noconfirm fwupd power-profiles-daemon reflector
     sudo systemctl enable fstrim.timer fwupd-refresh.timer power-profiles-daemon reflector.timer
     
-    sudo sed -i 's|^#--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#--latest .*/--latest 10\n--age 12/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's|^#*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*--latest .*/--latest 10\n--age 12/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
