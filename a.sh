@@ -1,65 +1,29 @@
 #!/bin/bash
 set -euo pipefail
 
-RED='\e[31m'
-GREEN='\e[32m'
-NC='\e[0m'
-
-if [ ! -f /etc/arch-release ]; then
-    echo -e "${RED}Este script é apenas para Arch Linux!${NC}"
-    exit 1
-fi
-
-detect_system() {
-    local cpu_info=$(cat /proc/cpuinfo 2>/dev/null)
-    if echo "$cpu_info" | grep -qi "intel"; then
-        CPU="intel"
-    elif echo "$cpu_info" | grep -qi "amd"; then
-        CPU="amd"
-    else
-        CPU="intel"
-    fi
-    
-    local gpu_info=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display" | head -1)
-    if echo "$gpu_info" | grep -qi "nvidia"; then
-        GPU="nvidia"
-    elif echo "$gpu_info" | grep -qi "amd\|radeon"; then
-        GPU="amd"
-    elif echo "$gpu_info" | grep -qi "intel"; then
-        GPU="intel"
-    else
-        GPU="nvidia"
-    fi
-}
-
-setup_sources() {
+setup_system() {
     sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
     sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
+    
+    sudo ufw reload
+    sudo ufw allow 53317/udp
+    sudo ufw allow 53317/tcp
+    
+    sudo mkdir -p /etc/environment.d
+    sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
+MESA_SHADER_CACHE_MAX_SIZE=12G
+__GL_SHADER_DISK_CACHE_SIZE=12000000000
+EOF
     
     sudo pacman -Syu --noconfirm
 }
 
 install_base() {
-    case "$CPU" in
-        intel) sudo pacman -S --noconfirm intel-ucode ;;
-        amd) sudo pacman -S --noconfirm amd-ucode ;;
-    esac
-    
-    case "$GPU" in
-        intel) sudo pacman -S --noconfirm vulkan-intel ;;
-        amd) sudo pacman -S --noconfirm vulkan-radeon ;;
-        nvidia) sudo pacman -S --noconfirm nvidia-open ;;
-    esac
-    
-    sudo pacman -S --noconfirm flatpak fastfetch msedit 7zip
+    sudo pacman -S --noconfirm intel-ucode nvidia-open fastfetch msedit 7zip
 }
 
-setup_system() {
-    sudo ufw reload
-    sudo ufw allow 53317/udp
-    sudo ufw allow 53317/tcp
-    
+setup_base() {
     sudo pacman -S --noconfirm fwupd reflector power-profiles-daemon system76-scheduler
     sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon com.system76.Scheduler
     
@@ -69,12 +33,6 @@ setup_system() {
     sudo sed -i 's/^#*\s*--latest .*/--latest 10/' /etc/xdg/reflector/reflector.conf
     sudo sed -i '/^--latest/a --age 12' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
-    
-    sudo mkdir -p /etc/environment.d
-    sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
-MESA_SHADER_CACHE_MAX_SIZE=12G
-__GL_SHADER_DISK_CACHE_SIZE=12000000000
-EOF
 }
 
 install_desktop() {
@@ -82,7 +40,7 @@ install_desktop() {
     sudo systemctl enable cosmic-greeter
 }
 
-install_updater() {
+setup_updater() {
     sudo tee /usr/local/bin/system-update > /dev/null <<'EOF'
 #!/bin/bash
 set -euo pipefail
@@ -107,13 +65,6 @@ if command -v pacman >/dev/null 2>&1; then
     fi
 fi
 
-if command -v flatpak >/dev/null 2>&1; then
-    if [ -n "$(flatpak remote-ls --updates 2>/dev/null)" ]; then
-        flatpak update -y
-        flatpak uninstall --unused --delete-data -y
-    fi
-fi
-
 echo ""
 echo -e "${GREEN}Sistema atualizado com sucesso, pressione enter para sair${NC}"
 read -r
@@ -134,15 +85,11 @@ EOF
 }
 
 main() {
-    detect_system
-    setup_sources
-    install_base
     setup_system
+    install_base
+    setup_base
     install_desktop
-    install_updater
-    
-    echo ""
-    echo -e "${GREEN}Instalação concluída!${NC}"
+    setup_updater
 }
 
 main
