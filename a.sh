@@ -29,8 +29,8 @@ detect_system() {
 }
 
 setup_sources() {
-    sudo sed -i 's/^#*Color/Color\nILoveCandy/' /etc/pacman.conf
-    sudo sed -i 's/^#*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
+    sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
+    sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 15/' /etc/pacman.conf
     sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
     
     sudo pacman -Syu --noconfirm
@@ -59,17 +59,53 @@ setup_system() {
     sudo pacman -S --noconfirm fwupd power-profiles-daemon reflector
     sudo systemctl enable fstrim.timer fwupd-refresh.timer power-profiles-daemon reflector.timer
     
-    sudo sed -i 's|^#*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*--latest .*/--latest 10\n--age 12/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's|^#*\s*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--latest .*/--latest 10/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i '/^--latest/a --age 12' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
     
     sudo mkdir -p /etc/environment.d
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
 MESA_SHADER_CACHE_MAX_SIZE=12G
 __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
+}
+
+setup_oomd() {
+    sudo mkdir -p /etc/systemd/system/user@.service.d
+    sudo tee /etc/systemd/system/user@.service.d/override.conf > /dev/null <<EOF
+[Service]
+Delegate=yes
+ManagedOOMMemoryPressure=kill
+ManagedOOMMemoryPressureLimit=50%
+EOF
+    
+    sudo mkdir -p /etc/systemd/system/user.slice.d
+    sudo tee /etc/systemd/system/user.slice.d/override.conf > /dev/null <<EOF
+[Slice]
+ManagedOOMSwap=kill
+EOF
+    
+    sudo mkdir -p /etc/systemd/system.conf.d
+    sudo tee /etc/systemd/system.conf.d/accounting.conf > /dev/null <<EOF
+[Manager]
+DefaultCPUAccounting=yes
+DefaultIOAccounting=yes
+DefaultMemoryAccounting=yes
+DefaultTasksAccounting=yes
+EOF
+    
+    sudo mkdir -p /etc/systemd/oomd.conf.d
+    sudo tee /etc/systemd/oomd.conf.d/override.conf > /dev/null <<EOF
+[OOM]
+SwapUsedLimit=90%
+DefaultMemoryPressureLimit=60%
+DefaultMemoryPressureDurationSec=20s
+EOF
+    
+    sudo systemctl enable --now systemd-oomd
 }
 
 install_desktop() {
@@ -132,6 +168,7 @@ main() {
     setup_sources
     install_base
     setup_system
+    setup_oomd
     install_desktop
     install_updater
     
