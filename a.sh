@@ -108,7 +108,7 @@ if command -v flatpak >/dev/null 2>&1; then
 fi
 
 echo ""
-echo "Sistema atualizado com sucesso, pressione enter para sair"
+echo -e '\e[32mSistema atualizado com sucesso, pressione enter para sair\e[0m'
 read -r
 EOF
 
