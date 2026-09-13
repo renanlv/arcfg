@@ -57,11 +57,11 @@ NC='\e[0m'
 
 if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     sudo pacman -Syu --noconfirm
+    sudo pacman -Fy --noconfirm
     orphans=$(pacman -Qdtq 2>/dev/null)
     if [ -n "$orphans" ]; then
         sudo pacman -Rnsu $orphans --noconfirm
     fi
-    sudo pacman -Fy --noconfirm
     sudo pacman -Sc --noconfirm
     flatpak uninstall --unused --delete-data -y
 fi
