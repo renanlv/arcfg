@@ -1,7 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-[ -f /etc/arch-release ] || exit 1
+if [ ! -f /etc/arch-release ]; then
+    echo "Este sistema não é Arch Linux."
+    exit 1
+fi
 
 setup_system() {
     sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
