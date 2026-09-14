@@ -10,7 +10,6 @@ setup_system() {
     sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*timeout.*/timeout 2/' /boot/loader/loader.conf
-    
     sudo pacman -Syu --noconfirm
     
     sudo ufw reload
