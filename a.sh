@@ -2,6 +2,11 @@
 set -euo pipefail
 
 setup_system() {
+    if [ ! -f /etc/arch-release ]; then
+        echo "Este script é apenas para Arch Linux!"
+        exit 1
+    fi
+    
     sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*timeout.*/timeout 2/' /boot/loader/loader.conf
