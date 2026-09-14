@@ -1,7 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-GREEN='\e[32m'
-NC='\e[0m'
 
 setup_system() {
     sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
@@ -57,8 +55,6 @@ setup_updater() {
     sudo tee /usr/local/bin/system-update > /dev/null <<'EOF'
 #!/bin/bash
 set -euo pipefail
-GREEN='\e[32m'
-NC='\e[0m'
 
 if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     sudo pacman -Syu --noconfirm
@@ -71,7 +67,7 @@ if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     flatpak uninstall --unused --delete-data -y
 fi
 
-echo -e "${GREEN}Sistema atualizado com sucesso, pressione enter para sair${NC}"
+echo "Sistema atualizado com sucesso, pressione enter para sair"
 read -r
 EOF
 
@@ -94,7 +90,7 @@ main() {
     setup_base
     install_desktop
     setup_updater
-    echo -e "${GREEN}Instalação concluída!${NC}"
+    echo "Instalação concluída!"
 }
 
 main
