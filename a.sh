@@ -1,13 +1,7 @@
 #!/bin/bash
 set -euo pipefail
-RED='\e[31m'
 GREEN='\e[32m'
 NC='\e[0m'
-
-if [ ! -f /etc/arch-release ]; then
-    echo -e "${RED}Este script é apenas para Arch Linux!${NC}"
-    exit 1
-fi
 
 setup_system() {
     sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
@@ -24,6 +18,14 @@ setup_system() {
     sudo tee /etc/environment.d/performance.conf > /dev/null <<EOF
 MESA_SHADER_CACHE_MAX_SIZE=12G
 __GL_SHADER_DISK_CACHE_SIZE=12000000000
+EOF
+    
+    sudo mkdir -p /etc/sysctl.d
+    sudo tee /etc/sysctl.d/99-vm-zram-parameters.conf > /dev/null <<EOF
+vm.swappiness = 180
+vm.watermark_boost_factor = 0
+vm.watermark_scale_factor = 125
+vm.page-cluster = 0
 EOF
 }
 
