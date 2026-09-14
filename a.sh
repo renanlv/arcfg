@@ -19,7 +19,7 @@ __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
 }
 
-install_base() {
+install_drivers() {
     if grep -qi "amd" /proc/cpuinfo; then
         sudo pacman -S --noconfirm amd-ucode
     else
@@ -33,12 +33,10 @@ install_base() {
     else
         sudo pacman -S --noconfirm nvidia-open
     fi
-    
-    sudo pacman -S --noconfirm fastfetch msedit 7zip
 }
 
-setup_base() {
-    sudo pacman -S --noconfirm flatpak fwupd reflector power-profiles-daemon
+install_base() {
+    sudo pacman -S --noconfirm fastfetch msedit flatpak fwupd reflector power-profiles-daemon
     sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon
     
     sudo sed -i 's/^#*\s*--country.*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
@@ -86,8 +84,8 @@ EOF
 
 main() {
     setup_system
+    install_drivers
     install_base
-    setup_base
     install_desktop
     setup_updater
     echo "Instalação concluída!"
