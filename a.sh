@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+[ -f /etc/arch-release ] || exit 1
+
 setup_system() {
     sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
@@ -56,17 +58,15 @@ set -euo pipefail
 
 if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     sudo pacman -Syu --noconfirm
-    sudo pacman -Fy --noconfirm
     orphans=$(pacman -Qdtq 2>/dev/null)
     if [ -n "$orphans" ]; then
         sudo pacman -Rnsu $orphans --noconfirm
     fi
     sudo pacman -Sc --noconfirm
-    flatpak uninstall --unused --delete-data -y
 fi
 
-echo "Sistema atualizado com sucesso, pressione enter para sair"
-read -r
+echo "Sistema atualizado com sucesso. Fechando em 5 segundos..."
+sleep 5
 EOF
 
     sudo chmod +x /usr/local/bin/system-update
