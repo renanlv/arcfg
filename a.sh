@@ -12,7 +12,7 @@ fi
 setup_system() {
     sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 10/' /etc/pacman.conf
-    sudo sed -i 's/^timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
+    sudo sed -i 's/^#*\s*timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
     
     sudo pacman -Syu --noconfirm
     
@@ -38,8 +38,7 @@ setup_base() {
     sudo sed -i 's|^#*\s*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*\s*--latest .*/--latest 10/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i '/^--latest/a --age 12' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--latest .*/--latest 10\n--age 12/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
 }
 
