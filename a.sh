@@ -2,8 +2,7 @@
 set -euo pipefail
 
 if [ ! -f /etc/arch-release ]; then
-    echo "Este sistema não é Arch Linux."
-    exit 1
+    echo "Este sistema não é Arch Linux."; exit 1
 fi
 
 setup_system() {
