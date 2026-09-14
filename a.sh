@@ -4,9 +4,9 @@ GREEN='\e[32m'
 NC='\e[0m'
 
 setup_system() {
-    sudo sed -i 's/^#*\s*Color/Color\nILoveCandy/' /etc/pacman.conf
-    sudo sed -i 's/^#*\s*ParallelDownloads = .*/ParallelDownloads = 10/' /etc/pacman.conf
-    sudo sed -i 's/^#*\s*timeout [0-9]*/timeout 2/' /boot/loader/loader.conf
+    sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
+    sudo sed -i 's/^#*\s*ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
+    sudo sed -i 's/^#*\s*timeout.*/timeout 2/' /boot/loader/loader.conf
     
     sudo pacman -Syu --noconfirm
     
@@ -19,29 +19,33 @@ setup_system() {
 MESA_SHADER_CACHE_MAX_SIZE=12G
 __GL_SHADER_DISK_CACHE_SIZE=12000000000
 EOF
-    
-    sudo mkdir -p /etc/sysctl.d
-    sudo tee /etc/sysctl.d/99-vm-zram-parameters.conf > /dev/null <<EOF
-vm.swappiness = 180
-vm.watermark_boost_factor = 0
-vm.watermark_scale_factor = 125
-vm.page-cluster = 0
-EOF
 }
 
 install_base() {
-    sudo pacman -S --noconfirm intel-ucode nvidia-open fastfetch msedit 7zip
+    if grep -qi "amd" /proc/cpuinfo; then
+        sudo pacman -S --noconfirm amd-ucode
+    else
+        sudo pacman -S --noconfirm intel-ucode
+    fi
+    
+    if lspci -nn | grep -E "VGA|3D|Display" | grep -qi "amd\|radeon"; then
+        sudo pacman -S --noconfirm vulkan-radeon
+    elif lspci -nn | grep -E "VGA|3D|Display" | grep -qi "intel"; then
+        sudo pacman -S --noconfirm vulkan-intel
+    else
+        sudo pacman -S --noconfirm nvidia-open
+    fi
+    
+    sudo pacman -S --noconfirm fastfetch msedit 7zip
 }
 
 setup_base() {
     sudo pacman -S --noconfirm flatpak fwupd reflector earlyoom power-profiles-daemon
     sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
     
-    sudo sed -i 's|^#*\s*--save .*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*\s*--protocol .*/--protocol https/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*\s*--country .*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*\s*--latest .*/--latest 10\n--age 12/' /etc/xdg/reflector/reflector.conf
-    sudo sed -i 's/^#*\s*--sort .*/--sort rate/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--country.*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--latest.*/--latest 10/' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--sort.*/--sort rate/' /etc/xdg/reflector/reflector.conf
 }
 
 install_desktop() {
