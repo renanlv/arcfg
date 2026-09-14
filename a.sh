@@ -49,8 +49,13 @@ install_base() {
 }
 
 install_desktop() {
-    sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
-    sudo systemctl enable cosmic-greeter
+    read -rp "Instalar COSMIC desktop? [S/n]: " choice; if [[ "${choice,,}" == "n" ]]; then
+        sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark
+        sudo systemctl enable plasmalogin
+    else
+        sudo pacman -S --noconfirm cosmic-session cosmic-terminal cosmic-files cosmic-monitor cosmic-store cosmic-text-editor cosmic-player cosmic-wallpapers xdg-user-dirs xdg-desktop-portal-gtk
+        sudo systemctl enable cosmic-greeter
+    fi
 }
 
 setup_updater() {
