@@ -38,8 +38,8 @@ install_base() {
 }
 
 setup_base() {
-    sudo pacman -S --noconfirm flatpak fwupd reflector earlyoom power-profiles-daemon
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer earlyoom power-profiles-daemon
+    sudo pacman -S --noconfirm flatpak fwupd reflector power-profiles-daemon
+    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon
     
     sudo sed -i 's/^#*\s*--country.*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--latest.*/--latest 10/' /etc/xdg/reflector/reflector.conf
