@@ -1,10 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-if [ ! -f /etc/arch-release ]; then
-    echo "Este sistema não é Arch Linux."; exit 1
-fi
-
 setup_system() {
     sudo sed -i 's/^#*\s*Color.*/Color\nILoveCandy/' /etc/pacman.conf
     sudo sed -i 's/^#*\s*ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
@@ -41,7 +37,7 @@ install_drivers() {
 
 install_base() {
     sudo pacman -S --noconfirm fastfetch msedit flatpak fwupd reflector power-profiles-daemon
-    sudo systemctl enable fstrim.timer fwupd-refresh.timer reflector.timer power-profiles-daemon
+    sudo systemctl enable fstrim.timer reflector.timer power-profiles-daemon
     
     sudo sed -i 's/^#*\s*--country.*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--latest.*/--latest 10/' /etc/xdg/reflector/reflector.conf
@@ -67,8 +63,8 @@ if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
     sudo pacman -Sc --noconfirm
 fi
 
-echo "Sistema atualizado com sucesso. Fechando em 5 segundos..."
-sleep 5
+echo "Sistema atualizado com sucesso, pressione enter para sair"
+read -r
 EOF
 
     sudo chmod +x /usr/local/bin/system-update
@@ -76,7 +72,6 @@ EOF
 [Desktop Entry]
 Type=Application
 Name=System Update
-Comment=Atualiza o sistema
 Exec=/usr/local/bin/system-update
 Icon=system-software-update
 Terminal=true
