@@ -3,7 +3,7 @@ set -euo pipefail
 
 setup_system() {
     if [ ! -f /etc/arch-release ]; then
-        echo "Este script é apenas para Arch Linux!"
+        echo "This script is for Arch Linux only!"
         exit 1
     fi
     
@@ -51,7 +51,7 @@ install_base() {
 }
 
 install_desktop() {
-    read -rp "Instalar COSMIC desktop? [S/n]: " choice; if [[ "${choice,,}" == "n" ]]; then
+    read -rp "Install COSMIC desktop? [Y/n]: " choice; if [[ "${choice,,}" == "n" ]]; then
         sudo pacman -S --noconfirm plasma-meta konsole dolphin partitionmanager filelight kate kcalc gwenview haruna ark
         sudo systemctl enable plasmalogin
     else
@@ -72,7 +72,7 @@ if [ -n "$orphans" ]; then
 fi
 sudo pacman -Sc --noconfirm
 
-echo "Sistema atualizado com sucesso, pressione enter para sair"
+echo "System updated successfully, press enter to exit"
 read -r
 EOF
 
@@ -94,7 +94,7 @@ main() {
     install_base
     install_desktop
     setup_updater
-    echo "Instalação concluída!"
+    echo "Installation complete!"
 }
 
 main
