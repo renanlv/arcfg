@@ -3,7 +3,7 @@ set -euo pipefail
 
 setup_system() {
     if [ ! -f /etc/arch-release ]; then
-        echo "This script is for Arch Linux only!"
+        echo -e '\e[32mThis script is for Arch Linux only!\e[0m'
         exit 1
     fi
     
@@ -72,7 +72,7 @@ if [ -n "$orphans" ]; then
 fi
 sudo pacman -Sc --noconfirm
 
-echo "System updated successfully, press enter to exit"
+echo -e '\e[32mSystem updated successfully, press enter to exit\e[0m'
 read -r
 EOF
 
@@ -94,7 +94,7 @@ main() {
     install_base
     install_desktop
     setup_updater
-    echo "Installation complete!"
+    echo -e '\e[32mInstallation complete!\e[0m'
 }
 
 main
