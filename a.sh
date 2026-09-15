@@ -40,7 +40,7 @@ install_drivers() {
 }
 
 install_base() {
-    sudo pacman -S --noconfirm fastfetch msedit flatpak fwupd reflector power-profiles-daemon
+    sudo pacman -S --noconfirm 7zip msedit fastfetch flatpak fwupd reflector power-profiles-daemon
     sudo systemctl enable fstrim.timer reflector.timer power-profiles-daemon
     
     sudo sed -i 's|^#*\s*--save.*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
