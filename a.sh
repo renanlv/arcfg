@@ -43,6 +43,8 @@ install_base() {
     sudo pacman -S --noconfirm fastfetch msedit flatpak fwupd reflector power-profiles-daemon
     sudo systemctl enable fstrim.timer reflector.timer power-profiles-daemon
     
+    sudo sed -i 's|^#*\s*--save.*|--save /etc/pacman.d/mirrorlist|' /etc/xdg/reflector/reflector.conf
+    sudo sed -i 's/^#*\s*--protocol.*/--protocol https/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--country.*/--country "Brazil,United States"/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--latest.*/--latest 10/' /etc/xdg/reflector/reflector.conf
     sudo sed -i 's/^#*\s*--sort.*/--sort rate/' /etc/xdg/reflector/reflector.conf
@@ -63,14 +65,12 @@ setup_updater() {
 #!/bin/bash
 set -euo pipefail
 
-if [ -n "$(pacman -Qu 2>/dev/null)" ]; then
-    sudo pacman -Syu --noconfirm
-    orphans=$(pacman -Qdtq 2>/dev/null)
-    if [ -n "$orphans" ]; then
-        sudo pacman -Rnsu $orphans --noconfirm
-    fi
-    sudo pacman -Sc --noconfirm
+sudo pacman -Syu --noconfirm
+orphans=$(pacman -Qdtq 2>/dev/null || true)
+if [ -n "$orphans" ]; then
+    sudo pacman -Rnsu $orphans --noconfirm
 fi
+sudo pacman -Sc --noconfirm
 
 echo "Sistema atualizado com sucesso, pressione enter para sair"
 read -r
